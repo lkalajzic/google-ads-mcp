@@ -1,0 +1,26 @@
+{
+  "name": "google-ads-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Google Ads API integration",
+  "module": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^24.0.11"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.15.0",
+    "dotenv": "^17.1.0",
+    "google-ads-api": "^20.0.1",
+    "googleapis": "^154.1.0",
+    "open": "^10.2.0"
+  }
+}
