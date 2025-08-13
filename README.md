@@ -1,7 +1,5 @@
 # Google Ads MCP
 
-<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I let Claude manage my Google Ads 🤖<br><br>Natural language &gt; clicking through 47 screens<br><br>Here&#39;s how to set it up yourself (takes ~30min):<br><br> <a href="https://t.co/8mQxtcXhvR">pic.twitter.com/8mQxtcXhvR</a></p>&mdash; Luka Kalajžić (@lukakalajzic) <a href="https://twitter.com/lukakalajzic/status/1955342987241701415?ref_src=twsrc%5Etfw">January 7, 2025</a></blockquote>
-
 Running Google Ads feels like cleaning the bathroom floor with a toothbrush. So I built a better way: managing Google Ads through natural conversation with Claude.
 
 ## Features
