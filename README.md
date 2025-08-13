@@ -1,10 +1,13 @@
-# Google Ads MCP Server
+# Google Ads MCP
 
-Natural language control for Google Ads through Claude Desktop. Manage campaigns, analyze performance, and optimize budgets—all through conversation.
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">I let Claude manage my Google Ads 🤖<br><br>Natural language &gt; clicking through 47 screens<br><br>Here&#39;s how to set it up yourself (takes ~30min):<br><br> <a href="https://t.co/8mQxtcXhvR">pic.twitter.com/8mQxtcXhvR</a></p>&mdash; Luka Kalajžić (@lukakalajzic) <a href="https://twitter.com/lukakalajzic/status/1955342987241701415?ref_src=twsrc%5Etfw">January 7, 2025</a></blockquote>
+
+Running Google Ads feels like cleaning the bathroom floor with a toothbrush. So I built a better way: managing Google Ads through natural conversation with Claude.
 
 ## Features
 
 ### 🔍 Read & Analyze
+
 - List and switch between multiple Google Ads accounts
 - Get campaign/keyword/ad performance metrics
 - Analyze by device, location, demographics, schedule
@@ -12,6 +15,7 @@ Natural language control for Google Ads through Claude Desktop. Manage campaigns
 - Search term analysis
 
 ### ✏️ Create & Manage
+
 - Build complete campaigns from scratch
 - Location targeting (geo, radius, exclusions)
 - Keyword and negative keyword management
@@ -19,6 +23,7 @@ Natural language control for Google Ads through Claude Desktop. Manage campaigns
 - Budget and bid adjustments
 
 ### 🛡️ Safety First
+
 - **Dry run mode** - Preview changes before execution
 - **Default paused** - New campaigns/ads never auto-start
 - **Change tracking** - Built-in changelog generation
@@ -27,217 +32,233 @@ Natural language control for Google Ads through Claude Desktop. Manage campaigns
 ## Quick Start
 
 ### Prerequisites
-- Bun (recommended) or Node.js 18+
-- Claude Desktop app
+
 - Google Ads account with Manager Account (MCC)
-- Google Ads API developer token (free)
+- Node.js installed
+- Claude desktop app
+- About 15 minutes for initial setup
 
-### Installation
+### Step 1: Google Ads Configuration
 
-1. **Clone and install**
+**Create a Manager Account:**
+
+1. Go to [ads.google.com/home/tools/manager-accounts/](https://ads.google.com/home/tools/manager-accounts/)
+2. Click "Create a manager account"
+3. Fill in your business name and select how you'll use the account
+4. Create the MCC account (required for API access, even with just one ad account)
+
+**Get Your Developer Token:**
+
+1. Log into your Manager Account at [ads.google.com](https://ads.google.com) or using [this form](https://developers.google.com/google-ads/api/docs/get-started/dev-token#apply-token)
+2. In the left sidebar, click: Admin → API Center
+3. Click "Apply for access" and fill out:
+   - Contact email: Your email
+   - Developer token name: "MCP Integration" (or any name)
+   - Use case: "Managing my own accounts"
+   - OAuth2 client type: Desktop
+4. Submit and wait for approval (usually 1-3 business days)
+5. Once approved (you will get an email), copy your developer token from the API Center
+
+### Step 2: Google Cloud Setup
+
+1. Visit console.cloud.google.com
+2. Create a new project
+3. Enable the Google Ads API
+4. Create OAuth 2.0 credentials:
+   - Type: Desktop application
+   - Download the credentials JSON
+
+### Step 3: Install Prerequisites
+
+**Install Node.js:**
+
+- Download from [nodejs.org](https://nodejs.org/) (use LTS version)
+- Run the installer - just click through with defaults
+
+**Install Bun (optional but faster - speeds up every command!):**
+
+- In your terminal, paste this:
+
 ```bash
-git clone https://github.com/yourusername/google-ads-mcp
+curl -fsSL https://bun.sh/install | bash
+```
+
+### Step 4: Generate Refresh Token
+
+**Option A: Download ZIP (easier for non-devs)**
+
+1. Download the ZIP from [github.com/lkalajzic/google-ads-mcp](https://github.com/lkalajzic/google-ads-mcp)
+2. Extract it to a folder you'll remember (e.g., Desktop)
+3. Open Terminal (Mac) or Command Prompt (Windows):
+   - Mac: Press Cmd+Space, type "Terminal"
+   - Windows: Press Win+R, type "cmd"
+4. Navigate to the folder - in your terminal, paste:
+   ```bash
+   cd ~/Desktop/google-ads-mcp  # Mac
+   cd C:\Users\YourName\Desktop\google-ads-mcp  # Windows
+   ```
+
+**Option B: Git Clone (for devs)**
+
+- In your terminal, paste:
+
+```bash
+git clone https://github.com/lkalajzic/google-ads-mcp
 cd google-ads-mcp
-bun install  # or npm install
-bun run build  # or npm run build
 ```
 
-2. **Set up Google Ads API access**
-   - Create a Manager Account at ads.google.com
-   - Get a developer token from API Center
-   - Set up OAuth2 credentials in Google Cloud Console
-   - Run `node scripts/generate-refresh-token.js` to authenticate
+**Then for both options:**
 
-3. **Configure environment**
+- In your terminal, paste:
+
 ```bash
-cp .env.example .env
-# Edit .env with your credentials
+# Install dependencies
+bun install  # or: npm install
+
+# Generate your refresh token
+bun run generate-token  # or: npm run generate-token
 ```
 
-4. **Add to Claude Desktop**
+Follow the browser prompts to authorize. Save the refresh token it generates.
 
-Edit your Claude config file:
-- Mac: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%/Claude/claude_desktop_config.json`
+### Step 5: Configure Environment
+
+**Copy the example file - in your terminal, paste:**
+
+```bash
+cp .env.example .env  # Mac/Linux
+copy .env.example .env  # Windows
+```
+
+**Edit `.env` with your credentials:**
+
+```env
+GOOGLE_ADS_DEVELOPER_TOKEN=your-token-here
+GOOGLE_ADS_CLIENT_ID=from-oauth-json
+GOOGLE_ADS_CLIENT_SECRET=from-oauth-json
+GOOGLE_ADS_REFRESH_TOKEN=from-the-script
+GOOGLE_ADS_MCC_ID=your-manager-account-id
+```
+
+### Step 6: Build the Project
+
+**In your terminal, paste:**
+
+```bash
+bun run build  # or: npm run build
+```
+
+This creates the `build/index.js` file Claude will use to run any command.
+
+### Step 7: Connect to Claude
+
+**Find your config file:**
+
+**Mac**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Windows**: `%APPDATA%/Claude/claude_desktop_config.json`
+**Linux**: `~/.config/Claude/claude_desktop_config.json`
+
+Or go to Claude -> Settings -> Developer -> Edit config
 
 ```json
 {
-  "mcpServers": {
-    "google-ads": {
-      "command": "bun",
-      "args": ["run", "/path/to/google-ads-mcp/src/index.ts"]
-    }
+  "google-ads-mcp": {
+    "command": "/Users/YOUR_USER_NAME_AND_PATH/.bun/bin/bun",
+    "args": ["run", "/absolute-path-to-your-folder/google-ads-mcp/src/index.ts"]
   }
 }
 ```
 
-Or if using Node:
-```json
-{
-  "mcpServers": {
-    "google-ads": {
-      "command": "node",
-      "args": ["/path/to/google-ads-mcp/build/index.js"]
-    }
-  }
-}
+**Note:** Use `"command": "node"` instead of `"bun"` if you didn't install Bun.
+
+**Finding your absolute path:**
+
+- In your terminal (while in the google-ads-mcp folder), paste: `pwd` (Mac/Linux) or `cd` (Windows)
+- Copy that path and add `/build/index.js`
+
+Restart Claude and test with: "Claude, list my Google Ads accounts"
+
+## The Context System (Your Secret Weapon)
+
+The real power comes from giving Claude context about your business. Create three (ideally) markdown files:
+
+**1. general-instructions.md**
+
+See the included example in the repository for MCP usage instructions.
+
+**2. business-context.md**
+
+```markdown
+# Business Context
+
+## What We Sell
+
+SaaS product for project management
+
+## Target Metrics
+
+- CPA: <$50
+- CTR: >2%
+
+## What Works
+
+- "project management software" - high converter
+- Mobile traffic performs 40% better
+- US tech hubs: SF, NYC, Austin, Seattle
 ```
 
-5. **Test the connection**
-```
-You: "Claude, list my Google Ads accounts"
-Claude: [Shows your accounts]
-```
+**3. changelog.md**
 
-## Usage Examples
+```markdown
+# Change Log
 
-```
-"Show me campaign performance for last 30 days"
-"Pause campaigns with CPA over $75"
-"Create a search campaign for my SaaS, $50/day, targeting San Francisco"
-"Add 'free' and 'cheap' as negative keywords to all campaigns"
-"What locations are driving the most conversions?"
-"Increase mobile bid adjustments by 20%"
+[Claude will update this automatically with each change]
 ```
 
-## Context Files (Recommended)
+At the start of every chat you can say something like "initialize your memory from FOLDER_PATH" and Claude will read all three files if you have the filesystem MCP server enabled.
 
-Create these in your project root for better results:
-
-**business-context.md** - Your products, KPIs, what works
-**general-instructions.md** - Budget limits, naming conventions
-**changelog.md** - Auto-updated by Claude
-
-See `examples/` directory for templates.
-
-## Available Tools
-
-### Account Management
-- `list_accounts` - Show all accessible accounts
-- `set_active_account` - Switch between accounts
-
-### Analysis Tools
-- `get_campaign_performance` - Metrics by date range
-- `get_geo_performance` - Geographic breakdown
-- `get_device_performance` - Mobile/desktop/tablet analysis
-- `get_demographics` - Age and gender insights
-- `get_ad_schedule` - Hour and day performance
-
-### Campaign Tools
-- `create_campaign` - Build new campaigns
-- `update_campaign` - Modify settings
-- `pause_campaign` / `enable_campaign` - Status control
-
-### Targeting Tools
-- `search_location_targets` - Find location IDs
-- `add_location_targets` - Target specific locations
-- `add_radius_target` - Radius targeting
-- `exclude_locations` - Location exclusions
-
-### Keywords & Ads
-- `add_keywords` - Add with match types
-- `add_negative_keywords` - Campaign/ad group level
-- `create_responsive_search_ad` - RSAs with pinning
-- `update_keyword_bids` - Bid management
-
-## Architecture
+## Common Commands to Try
 
 ```
-├── src/
-│   ├── index.ts           # MCP server entry
-│   ├── client.ts          # Google Ads API client
-│   ├── tools/
-│   │   ├── read/          # Analysis tools
-│   │   ├── write/         # Modification tools
-│   │   └── utility/       # Helper tools
-│   └── gaql/              # Query builders
-├── scripts/
-│   └── generate-refresh-token.js
-└── examples/
-    └── context-files/
+"Make a report of the campaign performance in the last 30 days"
+"Analyze my search terms and suggest keywords to add and exclude"
+"Pause all poor performing ad groups"
+"Create a brand search protection campaign"
+"Add competitor brand names as negative keywords"
+"Analyze campaign performance in-depth - per device, location, time of day"
 ```
-
-## Development
-
-```bash
-# Run in development
-bun run dev
-
-# Run tests
-bun test
-
-# Build for production
-bun run build
-
-# Type checking
-bun run typecheck
-```
-
-## Safety & Best Practices
-
-1. **Always use dry_run for testing**
-   ```
-   "Create a campaign with dry_run true"
-   ```
-
-2. **Set budget alerts in Google Ads UI**
-   - This is your safety net beyond the code
-
-3. **Start with read-only operations**
-   - Get familiar before making changes
-
-4. **Use context files**
-   - Better context = better decisions
 
 ## Troubleshooting
 
-**Claude can't see accounts**
-- Check MCC ID is correct
-- Verify refresh token scopes
-- Ensure developer token is approved
+**"Claude can't see my accounts"**
 
-**Changes don't appear**
-- Google Ads has 5-minute cache
-- Check change history in UI
-- Verify account permissions
+- Check your MCC ID is correct
+- Run test command: `bun run test-connection` or `npm run test-connection`
+- Ensure the refresh token has proper scopes
 
-**Authentication errors**
-- Regenerate refresh token
-- Check OAuth client configuration
-- Verify API is enabled in Google Cloud
+**"Changes aren't appearing"**
+
+- Check the change history in Google Ads UI
+
+**"Getting permission errors"**
+
+- Your developer token needs to be approved (check email for approval)
+- Verify API access level: Manager Account → Admin (left sidebar) → API Center
 
 ## Contributing
 
-Contributions welcome! Please read CONTRIBUTING.md first.
-
-Key areas for improvement:
-- Additional GAQL query templates
-- Smart bidding strategies
-- Bulk operations
-- Performance recommendations
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines.
 
 ## License
 
-MIT - See LICENSE file
-
-## Disclaimer
-
-This is beta software. Always verify changes in Google Ads UI. The authors are not responsible for ad spend or campaign performance. Use dry_run mode liberally.
-
-## Support
-
-- **Issues**: GitHub Issues
-- **Discussions**: GitHub Discussions
-- **Security**: See SECURITY.md
-
-## Author
-
-**Luka Kalajdzic**
-- Website: [lukakalajzic.com](https://lukakalajzic.com)
-- Twitter/X: [@lukakalajzic](https://x.com/lukakalajzic)
-- LinkedIn: [/in/lukakalajzic](https://www.linkedin.com/in/lukakalajzic/)
-- YouTube: [@luka-kalajzic](https://www.youtube.com/@luka-kalajzic)
+MIT License - see [LICENSE](LICENSE)
 
 ---
 
-Built with ❤️ for people who'd rather chat than click
+_Blog post: [lukakalajzic.com/google-ads-mcp](https://lukakalajzic.com/google-ads-mcp)_
+
+_Questions? Issues? Open a GitHub issue or reach out on Twitter: [@lukakalajzic](https://x.com/lukakalajzic)_
+
+_Built by Luka Kalajžić_
+
+_Remember: Always verify changes in Google Ads. This is beta software - use dry_run mode liberally._
